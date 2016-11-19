@@ -1,0 +1,65 @@
+
+/// As you have averaged polarisation curves in triplicates you can run this script to calculate the mean average polarisation curves as well as the tafel plots
+// IMPORTANT: This Script relies on the existence of 6 other sheets in which the previous calculations have done
+//This means, that you only can apply this sheet to 
+
+
+newsheet;//makes new sheet in book to do the calculations
+wks.name$ = Calculations;
+//This should now be sheet 7
+
+
+// Now there should be multiples of six rows…
+page.active = 6;
+double Ts = wks.nCols/6;//gets number Triplicates
+loop (CV, 1, Ts) //Ts is the number of triplicates We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+{
+averagexy iy:=(6!($(CV*6-5), 6!$(CV*6-4)),( 6!$(CV*6-3), 6!$(CV*6-2)),( 6!$(CV*6-1), 6!$(CV*6))) 
+x:=7!$(CV*3-2) y:=7!$(CV*3-1) sd:=7!$(CV*3) ;
+}
+
+page.active$ =Calculations;
+loop (CV, 1, Ts) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+{
+wks.col$(CV*3-2).type = 4;//set odd as x 
+col($(CV*3-2))[L]$ =  E vs. Ag/AgCl; 
+wks.col$(CV*3-2).unit$ = V; //Column naming
+wks.col$(CV*3-1).type = 1 ;//Set even cols as y
+col($(CV*3-1))[L]$ =  j;
+wks.col$(CV*3-1).unit$ = mA/cm^2;
+wks.col$(CV*3).type = 3 ;//Set last col as y err
+col($(CV*3))[L]$ =  j err;
+wks.col$(CV*3).unit$ = mA/cm^2;
+
+};
+sparklines c1:1 c2:end;//Allows to revise the data
+//plotxy (?,1:end) hide:=1; //
+
+// This will result in the tafel plot
+
+wcopy 7!;//Copies Averaged Data
+wks.name$ = Tafel;
+page.active$ =Tafel;
+
+loop (CV, 1, Ts) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+{
+	
+col($(CV*3-1))= log((abs(col($(CV*3-1)))));
+col($(CV*3)) =log((abs(col($(CV*3)))));
+};
+loop (CV, 1, Ts) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+{
+
+wks.col$(CV*3-2).type = 4;//set odd as x 
+col($(CV*3-2))[L]$ =  E vs. Ag/AgCl; 
+wks.col$(CV*3-2).unit$ = V; //Column naming
+wks.col$(CV*3-1).type = 1 ;//Set even cols as y
+col($(CV*3-1))[L]$ =  log|j|;
+wks.col$(CV*3).type = 3 ;//Set last col as y err
+col($(CV*3))[L]$ =  log|j] err;
+
+};
+sparklines c1:1 c2:end;//Allows to revise the data
+//plotxy (?,1:end) hide:=1; //
+
+
