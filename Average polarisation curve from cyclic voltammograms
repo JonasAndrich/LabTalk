@@ -29,7 +29,7 @@ col($(CV*2))[L]$ = I; // Y columns label
 wks.col$(CV*2).unit$ = mA; // Y column units
 };
 sparklines c1:1 c2:end;//Allows to revise the data
-plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
+//plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
 
 
 
@@ -77,7 +77,7 @@ page.active$ = Split;
 sparklines c1:1 c2:end;//Allows to revise the data
 page.active$ = average;
 sparklines c1:1 c2:end;//Allows to revise the data
-plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
+//plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
 
 
 // Once this script is run, one can calulate the current densities:
@@ -118,7 +118,7 @@ col($(CV*2))[L]$ =  j;
 wks.col$(CV*2).unit$ = mA/cm^2;
 };
 sparklines c1:1 c2:end;//Allows to revise the data
-plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
+//plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
 
 page.active$ = Average j;
 
@@ -132,7 +132,7 @@ col($(CV*2))[L]$ = j;
 wks.col$(CV*2).unit$ = mA/cm^2;
 };
 sparklines c1:1 c2:end;//Allows to revise the data
-plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
+//plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
 
 
 //Prepare Delete 
