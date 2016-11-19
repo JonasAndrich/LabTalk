@@ -1,0 +1,42 @@
+// Prerequesite: Cyclic Voltammetry (CV) Data with Potential in the X Column and Current in the Y Column. Eset (Setpoint Potential) = E2 (second Vertex Potential); You can analyse as many CVs as you like. The code first splits the CVs in forward and backward scan into a seperate sheet. In a new sheet the forward and backward scans are averaged. The Comment File of the X Column should contain Data, that allows to identify the File. The comment file of the Y Column should contain information, that allows to compare the average polarisation curves with.
+
+page.active$ = Sheet1;
+double CVs = wks.nCols/2;//gets number of CVs by the number of columns dived by two
+newsheet;//makes new sheet in book to do the split
+newsheet;//makes new sheet in book to do the Calculation
+page.active$ = Sheet1;
+page.active$ = Sheet1;
+loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, so the WKS.COL Comamnd is working 
+{
+colsplit irng:=Sheet1!$(CV*2-1):$(CV*2) method:=seq nrows:=(wks.col$(CV*2-1).nRows/2+0,5) rd:=Sheet2!;// Data points are divided by two and .5  to have a benefit of the rounding and not to start a column with 1 value. -r needs removal because no 
+
+colreverse rng:=2!$(CV*4-1):$(CV*4); //Backward scan column gets inverted.
+
+range r1 = 2!$(CV*4-3); //Potential forward scan
+range r2 = 2!$(CV*4-2); //Current backward scan
+range r3 = 2!$(CV*4-1); //Potential backward scan
+range r4 = 2!$(CV*4); //Current backward  scan
+range r5 = 3!$(CV*2-1); // Defines Output region for average potential
+range r6 = 3!$(CV*2); // Defines Output region for average current
+
+r5= ((r1+r3)/2); //Average potential
+r6= ((r2+r4)/2); //Average current 
+
+};
+
+page.active$ = Sheet3;
+
+loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+{
+wks.col$(CV*2-1).type = 4;//set odd columns as x 
+col($(CV*2-1))[L]$ = E vs. Ag/AgCl; //X columns label
+wks.col$(CV*2-1).unit$ = V; // X column units 
+wks.col$(CV*2).type = 1 ;//set even columns as y
+col($(CV*2))[L]$ = I; // Y columns label
+wks.col$(CV*2).unit$ = mA; // Y column units
+};
+
+sparklines;//Allows to revise the data
+plotxy (?,1:end) plot:=200; // Plot line graph (200 is number of line graph)
+
+// Once this script is run, you can review your averaged polarisation curves in the Plot
