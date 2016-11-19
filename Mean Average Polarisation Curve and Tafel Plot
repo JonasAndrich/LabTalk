@@ -1,7 +1,7 @@
 
 /// As you have averaged polarisation curves in triplicates you can run this script to calculate the mean average polarisation curves as well as the tafel plots
 // IMPORTANT: This Script relies on the existence of 6 other sheets in which the previous calculations have done
-//This means, that you only can apply this sheet to 
+//This means, that you should only run this script after youve run "Average polarisation curve from cyclic voltammograms"
 
 
 newsheet;//makes new sheet in book to do the calculations
