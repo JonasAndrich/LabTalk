@@ -1,26 +1,63 @@
 
 //What does the script do? 
-// It  splits the CVs in forward and backward scan into a seperate Sheet2 and reverses the Backward scan. In Sheet3 forward and backward scans are averaged. The averaged curves are then plotted.
+// It  splits Cyclic Voltammograms in forward and backward scan into a seperate Sheet2 and reverses the Backward scan. In Sheet3 forward and backward scans are averaged. The averaged curves are then plotted.
 // You can run another script afterwards to calculate the current densities
 
 //Important prerequesite for the Data structure: How does my data should look like?
 //Raw Data in Sheet1, no other Sheets in the Origin Workbook. 
-//Cyclic Voltammetry (CV) Data with Potential in the X Column and Current in the Y Column. 
+//Cyclic Voltammetry (CV) Data with Potential in the X Column and Current (not current densities!) in the Y Column. 
 //Eset (Setpoint Potential) = E2 (second Vertex Potential)-> Raw Data contains Cycling only between E1 and E2; 
 //Numeric seperator 1.000,00
 //You can analyse as many CVs as you like.
 //The Comment File of the X Column should contain Data, that allows to identify the File. 
 //The comment file of the Y Column should contain information, that allows to compare the polarisation curves with each other in the produced plot.
 
-page.active$ = Sheet1;//Goes to the Raw Data
+
+//
+//
+//Format and Plot the Sheets
+page.active = 1;//Goes to the Raw Data
+wks.name$ = RawData; // name it 
 double CVs = wks.nCols/2;//gets number of CVs by the number of columns dived by two
+loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+{
+wks.col$(CV*2-1).type = 4;//set odd columns as x 
+col($(CV*2-1))[L]$ = E vs. Ag/AgCl; //X columns label
+wks.col$(CV*2-1).unit$ = V; // X column units 
+wks.col$(CV*2).type = 1 ;//set even columns as y
+col($(CV*2))[L]$ = I; // Y columns label
+wks.col$(CV*2).unit$ = mA; // Y column units
+};
+sparklines c1:1 c2:end;//Allows to revise the data
+plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
+
+
+
+//Prepare everything for the Splitting and Average calculation
+
+//Create and name splitting sheet
 newsheet;//makes new sheet in book to do the split
-newsheet;//makes new sheet in book to do the Calculation
-page.active$ = Sheet1;
-page.active$ = Sheet1;
+wks.name$ = Split;
+
+
+//Create, name and prepare sheet to store average values
+newsheet;//makes new sheet in book to do the average
+wks.name$ = average;
+page.active$ = average;
+
+loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+{
+colcopy irng:=1!$(CV*2-1) orng:=3!$(CV*2-1) data:=0 lname:=1 units:=1 comments:=1 para:=0;
+colcopy irng:=1!$(CV*2) orng:=3!$(CV*2) data:=0 lname:=1 units:=1 comments:=1 para:=0;
+
+};
+
+
+page.active$ = RawData;
+//Do the splitting
 loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, so the WKS.COL Comamnd is working 
 {
-colsplit irng:=Sheet1!$(CV*2-1):$(CV*2) method:=seq nrows:=(wks.col$(CV*2-1).nRows/2+0,5) rd:=Sheet2!;// Data points are divided by two and .5  to have a benefit of the rounding and not to start a column with 1 value. -r needs removal because no 
+colsplit irng:=1!$(CV*2-1):$(CV*2) method:=seq nrows:=(wks.col$(CV*2-1).nRows/2+0,5) rd:=Split!;// Data points are divided by two and .5  to have a benefit of the rounding and not to start a column with 1 value. -r needs removal because no 
 
 colreverse rng:=2!$(CV*4-1):$(CV*4); //Backward scan column gets inverted.
 
@@ -36,19 +73,63 @@ r6= ((r2+r4)/2); //Average current
 
 };
 
-page.active$ = Sheet3;
+page.active$ = Split;
+sparklines c1:1 c2:end;//Allows to revise the data
+page.active$ = average;
+sparklines c1:1 c2:end;//Allows to revise the data
+plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
+
+
+// Once this script is run, one can calulate the current densities:
+
+page.active$ = average;
+double CVs = wks.nCols/2;//gets number of cvs by the number of columns dived by two
+
+wcopy 1!;//makes new sheet in book to do the Calculation for CVs 
+wks.name$ = CV j;
+wcopy 3!;//makes new sheet in book to do the Calculation for Average j
+wks.name$ = Average j;
 
 loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
 {
-wks.col$(CV*2-1).type = 4;//set odd columns as x 
-col($(CV*2-1))[L]$ = E vs. Ag/AgCl; //X columns label
-wks.col$(CV*2-1).unit$ = V; // X column units 
-wks.col$(CV*2).type = 1 ;//set even columns as y
-col($(CV*2))[L]$ = I; // Y columns label
-wks.col$(CV*2).unit$ = mA; // Y column units
+%B = 1!col($(CV*2-1))[C]$ ;// Wir setzen den Dialogtext %B gleich dem ersten Commentsteil, um die Elektrode angezeigt bekommen, für die wir die Fläche brauchen
+getn (%B)  AA;//die Fläche wird gespeichert als AA
+
+
+range r1 = 1!$(CV*2); // CV Current
+range r2 = 4!$(CV*2); //Target for j
+r2= (r1/AA); //Mean of pot 
+
+range r3 = 3!$(CV*2); // Mean Current 
+range r4 = 5!$(CV*2); // Target for j
+r4= (r3/AA); //Mean of current 
+
 };
 
-sparklines;//Allows to revise the data
-plotxy (?,1:end) plot:=200; // Plot line graph (200 is number of line graph)
+page.active$ = CV j;
 
-// Once this script is run, you can review your averaged polarisation curves in the Plot
+loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+{
+//wks.col$(CV*2-1).type = 4;//set odd as x 
+//col($(CV*2-1))[L]$ =  E vs. Ag/AgCl; 
+//wks.col$(CV*2-1).unit$ = V; //Column naming
+//wks.col$(CV*2).type = 1 ;//Set even cols as y
+col($(CV*2))[L]$ =  j;
+wks.col$(CV*2).unit$ = mA/cm^2;
+};
+sparklines c1:1 c2:end;//Allows to revise the data
+plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
+
+page.active$ = Average j;
+
+loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+{
+//wks.col$(CV*2-1).type = 4;//set odd as x 
+//col($(CV*2-1))[L]$ = E vs. Ag/AgCl; 
+//wks.col$(CV*2-1).unit$ = V; //Column naming
+//wks.col$(CV*2).type = 1 ;//Set even cols as y
+col($(CV*2))[L]$ = j;
+wks.col$(CV*2).unit$ = mA/cm^2;
+};
+sparklines c1:1 c2:end;//Allows to revise the data
+plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
