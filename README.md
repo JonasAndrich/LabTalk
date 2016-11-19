@@ -1,2 +1,2 @@
 # LabTalk
-Scripts for Electrochemistry Data Analysis
+Data Analysis Scripts for Electrochemistry
