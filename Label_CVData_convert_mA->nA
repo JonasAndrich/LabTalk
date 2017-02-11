@@ -1,0 +1,32 @@
+//What does the script do? 
+// Helps me to convert CV Data w/o header and in mA to the nA scale for my microsensor measurements
+
+//Important prerequesite for the Data structure: How does my data should look like?
+//Raw Data in Sheet1, no other Sheets in the Origin Workbook. 
+//Cyclic Voltammetry (CV) Data with Potential in the X Column and Current (not current densities!) in the Y Column. 
+//Eset (Setpoint Potential) = E2 (second Vertex Potential)-> Raw Data contains Cycling only between E1 and E2; 
+//Numeric seperator 1.000,00
+//You can analyse as many CVs as you like.
+
+//
+//
+//Format and Plot the Sheets
+double CVs = wks.nCols/2;//gets number of CVs by the number of columns dived by two
+loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+
+{
+wks.col$(CV*2-1).type = 4;//set odd columns as x 
+col($(CV*2-1))[L]$ = E vs. Ag/AgCl; //X columns label
+wks.col$(CV*2-1).unit$ = V; // X column units 
+wks.col$(CV*2).type = 1 ;//set even columns as y
+col($(CV*2))[L]$ = I; // Y columns label
+wks.col$(CV*2).unit$ = nA; // Y column units
+
+range r1 = wcol(CV*2); // Defines of nA
+
+r1= (r1*1000000); //Make nA out of mA
+
+};
+
+sparklines c1:1 c2:end;//Allows to revise the data
+//plotxy (?,1:end) hide:=1 plot:=200; // Plot line graph (200 is number of line graph)
