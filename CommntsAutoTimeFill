@@ -1,0 +1,10 @@
+// What does this script do? As I have CVs made every half an hour, 
+// this automatically labels the y-column comment to number of CV*2/4
+
+double CVs = wks.nCols/2;//gets number of CVs by the number of columns dived by two
+loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+{
+
+col($(CV*2))[C]$ = $((CV*2)/4); // Y columns label
+
+};
