@@ -6,7 +6,16 @@ double CVs = wks.nCols/2;//gets number of CVs by the number of columns dived by 
 loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
 {
 
-col($(CV*2))[C]$ = $(((CV-1)*2)/4); // Y columns label
 col($(CV*2-1))[C]$ = $(rmod((CV-1), 3)); // Y columns label
+
+};
+
+double Cy = wks.nCols/6;
+loop (CV, 1, Cy) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+{
+
+col($(CV*2*3))[C]$ = $(((CV-1)*2)/4); // Y columns label
+col($(CV*2*3-2))[C]$ = $(((CV-1)*2)/4); // Y columns label
+col($(CV*2*3-4))[C]$ = $(((CV-1)*2)/4); // Y columns label
 
 };
