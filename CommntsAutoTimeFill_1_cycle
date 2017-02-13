@@ -6,7 +6,15 @@ double CVs = wks.nCols/2;//gets number of CVs by the number of columns dived by 
 loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
 {
 
-col($(CV*2))[C]$ = $(((CV-1)*2)/4); // Y columns label
+col($(CV*2))[C]$ = $(((CV-1)*2)/4); // Time as Y comment columns label
 
+
+};
+
+double CVs = wks.nCols/2;//gets number of CVs by the number of columns dived by two
+loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, damit der WKS.COL Befehl funktioniert
+{
+
+col($(CV*2-1))[C]$ = $(1); // X Cycle to columns comment
 
 };
