@@ -7,7 +7,7 @@
 //Raw Data in Sheet1, no other Sheets in the Origin Workbook. 
 //Cyclic Voltammetry (CV) Data with Potential in the X Column and Current (not current densities!) in the Y Column. 
 //Eset (Setpoint Potential) = E2 (second Vertex Potential)-> Raw Data contains Cycling only between E1 and E2; 
-//Numeric seperator 1.000,00
+//Numeric seperator 1,000.00
 //You can analyse as many CVs as you like.
 //The Comment File of the X Column should contain Data, that allows to identify the File. 
 //The comment file of the Y Column should contain information, that allows to compare the polarisation curves with each other in the produced plot.
@@ -57,7 +57,7 @@ page.active$ = RawData;
 //Do the splitting
 loop (CV, 1, CVs) //CVs is the number of CVs done (Number of XY columns)//We remain in the active sheet, so the WKS.COL Comamnd is working 
 {
-colsplit irng:=1!$(CV*2-1):$(CV*2) method:=seq nrows:=(wks.col$(CV*2-1).nRows/2+0,5) rd:=Split!;// Data points are divided by two and .5  to have a benefit of the rounding and not to start a column with 1 value. -r needs removal because no 
+colsplit irng:=1!$(CV*2-1):$(CV*2) method:=seq nrows:=(wks.col$(CV*2-1).nRows/2+0.5) rd:=Split!;// Data points are divided by two and .5  to have a benefit of the rounding and not to start a column with 1 value. -r needs removal because no 
 
 colreverse rng:=2!$(CV*4-1):$(CV*4); //Backward scan column gets inverted.
 
